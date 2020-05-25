@@ -6,6 +6,6 @@ namespace ConsoleChessApp
 {
     public enum Color
     {
-        White, Black
+        White = 1, Black = -1
     }
 }

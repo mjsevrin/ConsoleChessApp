@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ConsoleChessApp.Models.Pieces;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Text;
 
@@ -29,11 +31,11 @@ namespace ConsoleChessApp
 
         public bool TryMovePiece(Square oldSquare, Square newSquare, Color playerColor)
         {
-            // check piece is moving squares
-            if (oldSquare.Notation != newSquare.Notation)
+            // check target square is valid placement
+            if (ValidateSquare(oldSquare, newSquare, playerColor))
             {
-                // check new  square is empty or occupied by opposing piece
-                if (GetPieceAtSquare(newSquare)?.Color != playerColor)
+                // check path to newSquare
+                if (ValidatePath(oldSquare, newSquare))
                 {
                     // clone the board and its content
                     var tempBoard = CloneBoard();
@@ -56,7 +58,66 @@ namespace ConsoleChessApp
             }
             return false;
         }
-        
+
+        private bool ValidateSquare(Square oldSquare, Square newSquare, Color playerColor)
+        {
+            // check piece is moving squares
+            if (oldSquare.Notation != newSquare.Notation)
+            {
+                // check new  square is empty or occupied by opposing piece
+                if (GetPieceAtSquare(newSquare)?.Color != playerColor)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool ValidatePath(Square oldSquare, Square newSquare)
+        {
+            // Knights can jump over pieces
+            if(GetPieceAtSquare(oldSquare).GetType() != typeof(Knight))
+            {
+                
+                return RecursiveCheckPath(CalculateSubPath(oldSquare, newSquare));
+            }
+
+            return true;
+        }
+
+        private bool RecursiveCheckPath(Tuple<Square, Square> path)
+        {
+            Square oldSquare = path.Item1;
+            Square newSquare = path.Item2;
+
+            // base case
+            if (oldSquare.Notation == newSquare.Notation)
+            {
+                return true;
+            }
+
+            // recursive case
+            if(GetPieceAtSquare(newSquare) == null)
+            {
+                return RecursiveCheckPath(CalculateSubPath(oldSquare, newSquare));
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Tuple<Square, Square> CalculateSubPath(Square oldSquare, Square newSquare)
+        {
+            // calculate next closest square
+            int rowStep = oldSquare.Row.CompareTo(newSquare.Row);
+            int colStep = oldSquare.Column.CompareTo(newSquare.Column);
+            Square pathSquare = new Square(newSquare.Row + rowStep, newSquare.Column + colStep);
+
+            return new Tuple<Square, Square>(oldSquare, pathSquare);
+        }
+
+
         public Piece GetPieceAtSquare(Square square)
         {
             return _board[square.Row, square.Column];
