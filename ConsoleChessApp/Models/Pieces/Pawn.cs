@@ -4,13 +4,13 @@ using System.Text;
 
 namespace ConsoleChessApp.Models.Pieces
 {
-    public class Rook : Piece
+    public class Pawn : Piece
     {
         public bool HasMoved { get; private set; }
 
         public override string Icon { get => Color == Color.White ? "R" : "r"; }
 
-        public Rook(Board board, Color color, Square square, bool hasMoved = false) : base(board, color, square)
+        public Pawn(Board board, Color color, Square square, bool hasMoved = false) : base(board, color, square)
         {
             HasMoved = hasMoved;
         }
@@ -21,7 +21,7 @@ namespace ConsoleChessApp.Models.Pieces
             int columnDiff = newSquare.Column - Square. Column;
 
             // only allow horizontal or vertical movement
-            return rowDiff == 0 || columnDiff == 0;
+            return Convert.ToInt32(Color) * rowDiff == 1 && Math.Abs(columnDiff) <= 1;
         }
 
         public override bool TryMove(Square newSquare)

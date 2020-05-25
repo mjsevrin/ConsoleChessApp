@@ -39,6 +39,6 @@ namespace ConsoleChessApp
             return false;
         }
 
-        public abstract bool IsValidMove(Square new_square);
+        public abstract bool IsValidMove(Square newSquare);
     }
 }
