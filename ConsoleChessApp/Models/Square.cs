@@ -30,5 +30,11 @@ namespace ConsoleChessApp
 
             Row = int.Parse(lowerCaseNotation.Substring(1,1))-1;
         }
+
+        public Square(int row, int column)
+        {
+            Column = column;
+            Row = row;
+        }
     }
 }
