@@ -8,7 +8,7 @@ namespace ConsoleChessApp.Models.Pieces
     {
         public bool HasMoved { get; private set; }
 
-        public override string Icon { get => Color == Color.White ? "R" : "r"; }
+        public override string Icon { get => Color == Color.White ? "P" : "p"; }
 
         public Pawn(Board board, Color color, Square square, bool hasMoved = false) : base(board, color, square)
         {
@@ -20,8 +20,16 @@ namespace ConsoleChessApp.Models.Pieces
             int rowDiff = newSquare.Row - Square.Row;
             int columnDiff = newSquare.Column - Square. Column;
 
-            // only allow horizontal or vertical movement
-            return Convert.ToInt32(Color) * rowDiff == 1 && Math.Abs(columnDiff) <= 1;
+            // allow long move if pawn hasn't moved yet
+            bool moveAllowed = false;
+            if(!HasMoved)
+            {
+                moveAllowed = Convert.ToInt32(Color) * rowDiff <= 2 && columnDiff == 0;
+            }
+            // allow to move to 3 spaces in front of pawn
+            moveAllowed |= Convert.ToInt32(Color) * rowDiff == 1 && Math.Abs(columnDiff) <= 1;
+
+            return moveAllowed;
         }
 
         public override bool TryMove(Square newSquare)
