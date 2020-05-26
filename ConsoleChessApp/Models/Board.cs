@@ -19,6 +19,53 @@ namespace ConsoleChessApp
             _board = new Piece[size,size];
         }
         
+        public void Init()
+        {
+            // rooks
+            AddPiece(new Rook(this, Color.White, new Square("a1")));
+            AddPiece(new Rook(this, Color.White, new Square("h1")));
+            AddPiece(new Rook(this, Color.Black, new Square("a8")));
+            AddPiece(new Rook(this, Color.Black, new Square("h8")));
+
+            // knights
+            AddPiece(new Knight(this, Color.White, new Square("b1")));
+            AddPiece(new Knight(this, Color.White, new Square("g1")));
+            AddPiece(new Knight(this, Color.Black, new Square("b8")));
+            AddPiece(new Knight(this, Color.Black, new Square("g8")));
+
+            // bishops
+            AddPiece(new Bishop(this, Color.White, new Square("c1")));
+            AddPiece(new Bishop(this, Color.White, new Square("f1")));
+            AddPiece(new Bishop(this, Color.Black, new Square("c8")));
+            AddPiece(new Bishop(this, Color.Black, new Square("f8")));
+
+            // queens 
+            AddPiece(new Queen(this, Color.White, new Square("d1")));
+            AddPiece(new Queen(this, Color.Black, new Square("d8")));
+
+            // kings
+            AddPiece(new King(this, Color.White, new Square("e1")));
+            AddPiece(new King(this, Color.Black, new Square("e8")));
+
+            // pawns
+            for(int col = 0; col <= 7; col++)
+            {
+                AddPiece(new Pawn(this, Color.White, new Square(1, col)));
+                AddPiece(new Pawn(this, Color.Black, new Square(6, col)));
+            }
+        }
+
+        public void Clear()
+        {
+            _board = new Piece[Size, Size];
+        }
+
+        public void Reset()
+        {
+            Clear();
+            Init();
+        }
+
         public void AddPiece(Piece piece)
         {
             _board[piece.Square.Row, piece.Square.Column] = piece;
@@ -26,6 +73,8 @@ namespace ConsoleChessApp
 
         public bool Move(string oldSquare, string newSquare, Color playerColor)
         {
+            // TO DO: add logic for special moves (O-O, O-O-O, En Passant)
+
             return TryMovePiece(new Square(oldSquare), new Square(newSquare), playerColor);
         }
 
@@ -67,7 +116,9 @@ namespace ConsoleChessApp
                 // check new  square is empty or occupied by opposing piece
                 if (GetPieceAtSquare(newSquare)?.Color != playerColor)
                 {
-                    return true;
+                    // check piece being moved exists and is of the player's color
+                    if (GetPieceAtSquare(oldSquare)?.Color == playerColor)
+                        return true;
                 }
             }
             return false;
@@ -78,7 +129,6 @@ namespace ConsoleChessApp
             // Knights can jump over pieces
             if(GetPieceAtSquare(oldSquare).GetType() != typeof(Knight))
             {
-                
                 return RecursiveCheckPath(CalculateSubPath(oldSquare, newSquare));
             }
 
